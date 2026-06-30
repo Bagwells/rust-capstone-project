@@ -55,17 +55,26 @@ fn main() -> bitcoincore_rpc::Result<()> {
             println!("{wallet} is loaded");
         } else {
             if rpc.load_wallet(wallet).is_err() {
-                rpc.create_wallet(&wallet.to_string())?;
+                rpc.create_wallet(
+                    &wallet.to_string(),
+                    None,
+                    None,
+                    None,
+                    None
+            )?;
             }
             println!("{wallet} is created and loaded");
         }
     }
 
-    
-
     // Generate spendable balances in the Miner wallet. How many blocks needs to be mined?
+    let miner_address = rpc.get_new_address(&wallet_names[0], Nonne)?;
+    rpc.generate_to_address(1, &miner_address)?;
+    let miner_balance = rpc.get_balance(Some(&wallet_names[0]), None)?;
+    println!("Miner Balance: {}", miner_balance);
 
     // Load Trader wallet and generate a new address
+    
 
     // Send 20 BTC from Miner to Trader
 
