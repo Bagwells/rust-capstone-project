@@ -68,23 +68,39 @@ fn main() -> bitcoincore_rpc::Result<()> {
     }
 
     // Generate spendable balances in the Miner wallet. How many blocks needs to be mined?
-    let miner_address = rpc.get_new_address(&wallet_names[0], Nonne)?;
-    rpc.generate_to_address(1, &miner_address)?;
+    let miner_address = rpc.get_new_address(Some("Mining Reward"), None)?;
+    rpc.generate_to_address(101, &miner_address)?;  // 101 blocks is generated to because of the coinbase maturity consesus rule of the coinbase transaction that cannot be spent until the minimum output of 100 is confirmed
     let miner_balance = rpc.get_balance(Some(&wallet_names[0]), None)?;
-    println!("Miner Balance: {}", miner_balance);
+    println!("Miner Balance: {}", miner_balance); 
 
     // Load Trader wallet and generate a new address
-    
+    let trader_address = rpc.get_new_address(Some("Received"), None)?;
+    println!("Trader Address: {}", trader_address);
 
     // Send 20 BTC from Miner to Trader
+    let btc: f64 = 20.0;
+    let amount_to_send = Amount::from_btc(btc).unwrap();
+    let mut txid = String::new();
+    if miner_balance > amount_to_send {
+        txid = send_to_address(&trader_address, &btc)?;
+        println!("Transaction sent");
+    } else {
+        println!("Miner wallet has insufficient balance to send 20 BTC");
+    }
 
     // Check transaction in mempool
+    let mempool_info = rpc.get_mempool_entry(&txid)?;
+    println!("Mempool Info: {:?}", mempool_info);
 
     // Mine 1 block to confirm the transaction
+    rpc.generate_to_address(1, &miner_address)?;
 
     // Extract all required transaction details
+    let tx_details = rpc.get_transaction(&txid, None)?;
+    println!("{}", tx_details);
 
     // Write the data to ../out.txt in the specified format given in readme.md
+    
 
     Ok(())
 }
