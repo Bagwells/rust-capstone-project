@@ -121,7 +121,7 @@ fn main() -> bitcoincore_rpc::Result<()> {
 
     // Get blockchain info
     let blockchain_info: serde_json::Value = rpc.call("getblockchaininfo", &[])?;
-    println!("Blockchain Info: {}", blockchain_info.to_string());
+    println!("Blockchain Info: {}", blockchain_info);
 
     // Create/Load the wallets, named 'Miner' and 'Trader'. Have logic to optionally create/load them if they do not exist or not loaded already.
     let wallet_names = vec!["Miner", "Trader"];
@@ -132,7 +132,7 @@ fn main() -> bitcoincore_rpc::Result<()> {
             println!("{wallet} is already loaded");
         } else {
             if rpc.load_wallet(wallet).is_err() {
-                rpc.create_wallet(&wallet.to_string(), None, None, None, None)?;
+                rpc.create_wallet(wallet, None, None, None, None)?;
             }
             println!("{wallet} is loaded");
         }
@@ -176,7 +176,7 @@ fn main() -> bitcoincore_rpc::Result<()> {
 
     // Check transaction in mempool
     let tx = &txid;
-    let mempool_info = rpc.get_mempool_entry(&tx)?;
+    let mempool_info = rpc.get_mempool_entry(tx)?;
     println!("Mempool Info: {:?}", mempool_info);
 
     // Mine 1 block to confirm the transaction
