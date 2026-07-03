@@ -143,7 +143,7 @@ fn main() -> bitcoincore_rpc::Result<()> {
         .get_new_address(Some("Mining Reward"), None)?
         .assume_checked();
     println!("Miner Address: {}", miner_address);
-    rpc.generate_to_address(10, &miner_address)?; // 101 blocks is generated to because of the coinbase maturity consesus rule of the coinbase transaction that cannot be spent until the minimum output of 100 is confirmed
+    rpc.generate_to_address(101, &miner_address)?; // 101 blocks is generated to because of the coinbase maturity consesus rule of the coinbase transaction that cannot be spent until the minimum output of 100 is confirmed
     let miner_balance = miner_rpc.get_balance(None, None)?;
     println!("Miner Balance: {}", miner_balance);
 
