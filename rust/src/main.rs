@@ -69,10 +69,7 @@ fn address_from_scriptpubkey(spk: &ScriptPubKey) -> String {
     if let Some(field) = &spk.address {
         return match field {
             AddressField::One(s) => s.clone(),
-            AddressField::Many(v) => v
-                .first()
-                .expect("address array was empty")
-                .clone(),
+            AddressField::Many(v) => v.first().expect("address array was empty").clone(),
         };
     }
     // fallback to legacy "addresses" array
@@ -145,6 +142,7 @@ fn main() -> bitcoincore_rpc::Result<()> {
     let miner_address = miner_rpc
         .get_new_address(Some("Mining Reward"), None)?
         .assume_checked();
+    println!("Miner Address: {}", miner_address);
     rpc.generate_to_address(10, &miner_address)?; // 101 blocks is generated to because of the coinbase maturity consesus rule of the coinbase transaction that cannot be spent until the minimum output of 100 is confirmed
     let miner_balance = miner_rpc.get_balance(None, None)?;
     println!("Miner Balance: {}", miner_balance);
@@ -193,7 +191,8 @@ fn main() -> bitcoincore_rpc::Result<()> {
     let prev_txid = vin.txid.as_ref().expect("vin txid missing");
     let prev_vout = vin.vout.expect("vin vout missing") as usize;
     let prev: serde_json::Value = miner_rpc.call(
-        "gettransaction", &[json!(prev_txid), json!(null), json!(true)]
+        "gettransaction",
+        &[json!(prev_txid), json!(null), json!(true)],
     )?;
     let prev_output = &prev["decoded"]["vout"][prev_vout];
     let miner_input_address = address_from_scriptpubkey(&scriptpubkey_from_value(prev_output));
