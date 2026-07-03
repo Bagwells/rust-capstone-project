@@ -192,8 +192,9 @@ fn main() -> bitcoincore_rpc::Result<()> {
     let vin = &tx_details.decoded.vin[0];
     let prev_txid = vin.txid.as_ref().expect("vin txid missing");
     let prev_vout = vin.vout.expect("vin vout missing") as usize;
-    let prev: serde_json::Value =
-        miner_rpc.call("gettransaction", &[json!(prev_txid), json!(null), json!(true)])?;
+    let prev: serde_json::Value = miner_rpc.call(
+        "gettransaction", &[json!(prev_txid), json!(null), json!(true)]
+    )?;
     let prev_output = &prev["decoded"]["vout"][prev_vout];
     let miner_input_address = address_from_scriptpubkey(&scriptpubkey_from_value(prev_output));
     let miner_input_amount = prev_output["value"].as_f64().unwrap();
